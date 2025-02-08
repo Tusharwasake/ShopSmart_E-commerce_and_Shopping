@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { authRoutes } from "./routes/authRoutes.js";
-import {userRoutes} from "./routes/userRoutes.js"
+import { userRoutes } from "./routes/userRoutes.js";
+import { productRoutes } from "./routes/productRoutes.js";
 import "dotenv/config";
 import { db } from "./config/db.js";
 
@@ -15,7 +16,9 @@ app.use(cors());
 // routes
 
 app.use("/auth", authRoutes);
-app.use("/user",userRoutes)
+app.use("/user", userRoutes);
+app.use("/product", productRoutes);
+
 
 // database connection
 db()

@@ -36,8 +36,22 @@ const userProfileUpdate = async (req, res) => {
   }
 };
 
+const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId;
 
+    const fetchUser = await user.findOne({ _id: userId });
+    console.log(fetchUser);
 
-export {userProfileUpdate}
+    const payload = {
+      email: fetchUser.email,
+      username: fetchUser.username,
+    };
 
+    res.status(200).json({ message: payload });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
+export { userProfileUpdate, getUserProfile };
