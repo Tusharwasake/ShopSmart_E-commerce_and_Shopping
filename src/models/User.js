@@ -40,7 +40,24 @@ const userSchema = mongoose.Schema({
   },
 
   phone: { type: String },
-
+  cart: [
+    {
+      productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "product",
+      },
+      quantity: {
+        type: Number,
+        default: 1,
+      },
+    },
+  ],
+  wishlist: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "product",
+    },
+  ],
   otp: {
     type: String,
     default: null,
