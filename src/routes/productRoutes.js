@@ -6,7 +6,8 @@ import {
   reduceCartProductQuantity,
   getAllProduct,
   wishlistProduct,
-  removewishlist
+  removewishlist,
+  getTotalCartPrice
 
 } from "../controllers/productController.js";
 import { Router } from "express";
@@ -22,5 +23,6 @@ productRoutes.post("/addToCart", authentication, addProductToCart);
 productRoutes.post("/addToCart", authentication, reduceCartProductQuantity);
 productRoutes.post("/wishlist", authentication, wishlistProduct);
 productRoutes.post("/removewishlist", authentication, removewishlist);
+productRoutes.get("/totalCartPrice", authentication, getTotalCartPrice);
 
 export { productRoutes };
