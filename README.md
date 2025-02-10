@@ -12,16 +12,47 @@ Database: MongoDB Atlas (Cluster-based deployment)
 
 ## Directory Structure
 ```
-Shop-Smart/
-├── backend/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
+ShopSmart_E-Commerce/
+├── src/
 │   ├── config/
+│   │   ├── db.js
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── productController.js
+│   │   ├── userController.js
 │   ├── middleware/
+│   │   ├── authMiddleware.js
+│   ├── models/
+│   │   ├── event.js
+│   │   ├── product.js
+│   │   ├── user.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── productRoutes.js
+│   │   ├── userRoutes.js
+│   ├── services/
+│   │   ├── authService.js
+│   │   ├── emailService.js
+│   ├── utils/
+│   │   ├── jwt.js
+│   │   ├── errorHandler.js
+│   ├── validators/
+│   │   ├── authValidator.js
+│   │   ├── productValidator.js
 │   ├── server.js
-├── frontend/ (To be developed)
+├── .env
+├── .gitignore
+├── package-lock.json
+├── package.json
+├── README.md
+├── setup.ps1
 ```
+
+## Video Walkthrough of the Project
+
+
+## Video Walkthrough of the Codebase
+
 
 ## Features
 - User authentication (JWT-based login & registration)
@@ -32,6 +63,9 @@ Shop-Smart/
 - Secure payment gateway integration (to be implemented)
 - Forgot and Reset Password functionality with OTP verification
 - User profile update feature
+- Role-based access control (Admin & User)
+- Error handling with middleware
+- Data validation using `validators`
 
 ## Design Decisions & Assumptions
 - **MongoDB for Scalability**: Chosen as the database due to its flexibility with document storage.
@@ -40,6 +74,7 @@ Shop-Smart/
 - **Cart & Wishlist Stored in User Model**: Each user has an embedded array for their cart and wishlist, ensuring fast retrieval.
 - **Stock Deduction on Order Placement**: Prevents overselling of products.
 - **Password Hashing**: Uses bcrypt to hash passwords securely.
+- **Validation Middleware**: Ensures incoming data integrity.
 
 ## Installation & Getting Started
 Follow these steps to set up the project locally:
@@ -132,6 +167,8 @@ For testing authentication-based pages, use the following credentials:
 - **Cloudinary** - Media storage (to be integrated)
 - **Stripe API** - Payment processing (to be integrated)
 - **Bcrypt.js** - Password hashing for user security
+- **Mongoose Validators** - Ensuring valid data entry
+- **Middleware for Error Handling**
 
 ---
 🚀 **Shop Smart Backend is ready for further expansion!** Feel free to contribute or suggest improvements. 🎉
