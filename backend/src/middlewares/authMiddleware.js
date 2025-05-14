@@ -7,9 +7,9 @@ const authentication = async (req, res, next) => {
     return res.status(401).json({ message: "Unauthorized: No token provided" });
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-
+    // console.log("Decoded token:", decoded);
     req.user = decoded;
-    
+
     next();
   } catch (error) {
     if ((error.name = "TokenExpiredError")) {

@@ -6,9 +6,9 @@ import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
 import { sendOtpEmail } from "../services/emailService.js";
 
 const registerUser = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role = "user" } = req.body;
 
-  if (!username || !email || !password) {
+  if (!username || !email || !password || !role) {
     return res.status(400).json({
       message: "please enter in missing",
     });
@@ -22,6 +22,7 @@ const registerUser = async (req, res) => {
     username: username,
     email: email,
     password: hashPassword,
+    role: role,
   };
 
   try {
@@ -124,7 +125,6 @@ const forgotPassword = async (req, res) => {
 // reset password
 
 const resetpassword = async (req, res) => {
-
   try {
     const { email, otp, newpassword } = req.body;
 
@@ -141,7 +141,7 @@ const resetpassword = async (req, res) => {
     }
 
     // Check if OTP is correct and has not expired
-    
+
     if (fetchUser.otp != otp || new Date() > fetchUser.otpExpires) {
       return res.status(400).json({ message: "Invalid or expired OTP." });
     }
@@ -199,21 +199,20 @@ const logout = (req, res) => {
   res.status(204).send(); // Respond with No Content
 };
 
-
-
 // In authController.js
 const getCurrentUser = async (req, res) => {
   try {
     const userId = req.user.userId;
     const currentUser = await user.findOne({ _id: userId });
-    
+
     if (!currentUser) {
       return res.status(404).json({ message: "User not found" });
     }
-    
+
     // Don't send password back to client
-    const { password, otp, otpExpires, ...userWithoutSensitiveInfo } = currentUser;
-    
+    const { password, otp, otpExpires, ...userWithoutSensitiveInfo } =
+      currentUser;
+
     res.status(200).json(userWithoutSensitiveInfo);
   } catch (error) {
     console.error("Get current user error:", error);
@@ -221,42 +220,40 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-
-
 // In authController.js
 const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const userId = req.user.userId;
-    
+
     if (!currentPassword || !newPassword) {
-      return res.status(400).json({ 
-        message: "Current password and new password are required" 
+      return res.status(400).json({
+        message: "Current password and new password are required",
       });
     }
-    
+
     const userRecord = await user.findOne({ _id: userId });
-    
+
     if (!userRecord) {
       return res.status(404).json({ message: "User not found" });
     }
-    
+
     // Verify current password
     const isPasswordValid = await bcrypt.compare(
-      currentPassword, 
+      currentPassword,
       userRecord.password
     );
-    
+
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Current password is incorrect" });
     }
-    
+
     // Hash new password
     const salt = await bcrypt.genSalt(10);
     userRecord.password = await bcrypt.hash(newPassword, salt);
-    
+
     await userRecord.save();
-    
+
     res.status(200).json({ message: "Password changed successfully" });
   } catch (error) {
     console.error("Change password error:", error);
@@ -264,33 +261,35 @@ const changePassword = async (req, res) => {
   }
 };
 
-
-
 // In authController.js
 const verifyEmail = async (req, res) => {
   try {
     const { email, verificationCode } = req.body;
-    
+
     const userRecord = await user.findOne({ email });
-    
+
     if (!userRecord) {
       return res.status(404).json({ message: "User not found" });
     }
-    
+
     if (userRecord.isEmailVerified) {
       return res.status(400).json({ message: "Email already verified" });
     }
-    
-    if (userRecord.verificationCode !== verificationCode || 
-        new Date() > userRecord.verificationExpires) {
-      return res.status(400).json({ message: "Invalid or expired verification code" });
+
+    if (
+      userRecord.verificationCode !== verificationCode ||
+      new Date() > userRecord.verificationExpires
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired verification code" });
     }
-    
+
     userRecord.isEmailVerified = true;
     userRecord.verificationCode = null;
     userRecord.verificationExpires = null;
     await userRecord.save();
-    
+
     res.status(200).json({ message: "Email verified successfully" });
   } catch (error) {
     console.error("Verify email error:", error);
@@ -302,29 +301,34 @@ const resendVerification = async (req, res) => {
   try {
     const userId = req.user.userId;
     const userRecord = await user.findOne({ _id: userId });
-    
+
     if (!userRecord) {
       return res.status(404).json({ message: "User not found" });
     }
-    
+
     if (userRecord.isEmailVerified) {
       return res.status(400).json({ message: "Email already verified" });
     }
-    
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const verificationCode = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
     const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-    
+
     userRecord.verificationCode = verificationCode;
     userRecord.verificationExpires = verificationExpires;
     await userRecord.save();
-    
+
     // Send verification email using your email service
-    const emailResponse = await sendVerificationEmail(userRecord.email, verificationCode);
-    
+    const emailResponse = await sendVerificationEmail(
+      userRecord.email,
+      verificationCode
+    );
+
     if (!emailResponse.success) {
       return res.status(500).json({ message: emailResponse.message });
     }
-    
+
     res.status(200).json({ message: "Verification email sent" });
   } catch (error) {
     console.error("Resend verification error:", error);
@@ -342,7 +346,5 @@ export {
   getCurrentUser,
   changePassword,
   verifyEmail,
-  resendVerification
-
-
+  resendVerification,
 };
